@@ -42,17 +42,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    setMounted(true)
     const savedTheme = localStorage.getItem('flux-theme') as Theme
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     
-    setSystemTheme(prefersDark ? 'dark' : 'light')
-    
-    if (savedTheme) {
-      applyTheme(savedTheme)
-    } else {
-      applyTheme(prefersDark ? 'dark' : 'light')
-    }
+    // Use setTimeout to avoid synchronous setState in effect
+    setTimeout(() => {
+      if (savedTheme) {
+        applyTheme(savedTheme)
+      } else {
+        applyTheme(prefersDark ? 'dark' : 'light')
+      }
+      setSystemTheme(prefersDark ? 'dark' : 'light')
+      setMounted(true)
+    }, 0)
   }, [])
 
   const setTheme = (newTheme: Theme) => {
