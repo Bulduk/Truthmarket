@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  auth-service:
+    volumes:
+      - ./services/auth-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  user-service:
+    volumes:
+      - ./services/user-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  social-service:
+    volumes:
+      - ./services/social-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  market-service:
+    volumes:
+      - ./services/market-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  content-service:
+    volumes:
+      - ./services/content-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  wallet-service:
+    volumes:
+      - ./services/wallet-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  oracle-service:
+    volumes:
+      - ./services/oracle-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  notification-service:
+    volumes:
+      - ./services/notification-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development
+
+  analytics-service:
+    volumes:
+      - ./services/analytics-service:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev
+    environment:
+      - NODE_ENV=development

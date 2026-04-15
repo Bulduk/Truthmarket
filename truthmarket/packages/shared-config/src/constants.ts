@@ -1,0 +1,37 @@
+export const API_ENDPOINTS = {
+  AUTH: '/api/v1/auth',
+  USERS: '/api/v1/users',
+  MARKETS: '/api/v1/markets',
+  CONTENT: '/api/v1/content',
+  SOCIAL: '/api/v1/social',
+  WALLET: '/api/v1/wallet',
+  NOTIFICATIONS: '/api/v1/notifications',
+};
+
+export const CONTRACT_ADDRESSES = {
+  TOKEN: process.env.TOKEN_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000',
+  MARKET: process.env.MARKET_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000',
+  NFT: process.env.NFT_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000',
+  ORACLE: process.env.ORACLE_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000',
+};
+
+export const SIGNAL_MARKET_CONFIG = {
+  MIN_STAKE: 10,
+  MAX_STAKE: 100000,
+  FEE_RATE: 0.01, // 1%
+  CREATOR_FEE_RATE: 0.005, // 0.5%
+  RESOLUTION_DELAY_HOURS: 24
+};
+
+export const CONTENT_TYPE_CONFIG = {
+  MAX_TITLE_LENGTH: 100,
+  MAX_BODY_LENGTH: 10000,
+  MAX_TAGS: 5
+};
+
+export const CHAIN_CONFIG = {
+  ID: 137,
+  NAME: 'Polygon',
+  RPC_URL: process.env.POLYGON_RPC_URL || 'https://polygon-rpc.com',
+  EXPLORER_URL: 'https://polygonscan.com'
+};
