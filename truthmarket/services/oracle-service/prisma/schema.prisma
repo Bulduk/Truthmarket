@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                String              @id @db.Uuid
+  oracle_validators oracle_validators[]
+}
+
+model markets {
+  id              String            @id @db.Uuid
+  oracle_requests oracle_requests[]
+}
+
+model content_registry {
+  id              String            @id @db.Uuid
+  oracle_requests oracle_requests[]
+}
+
+model oracle_requests {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id       String?   @db.Uuid
+  content_id      String?   @db.Uuid
+  oracle_type     String
+  request_type    String    @db.VarChar(50)
+  status          String?   @default("PENDING") @db.VarChar(50)
+  request_data    Json?
+  result_data     Json?
+  requested_at    DateTime? @default(now()) @db.Timestamptz(6)
+  resolved_at     DateTime? @db.Timestamptz(6)
+  updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+
+  market          markets?          @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  content         content_registry? @relation(fields: [content_id], references: [id], onDelete: Cascade)
+  votes           oracle_votes[]
+}
+
+model oracle_validators {
+  id                     String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id                String    @unique @db.Uuid
+  stake_amount           Decimal?  @default(0) @db.Decimal(20,8)
+  reputation_score       Decimal?  @default(0) @db.Decimal(10,2)
+  total_validations      Int?      @default(0)
+  successful_validations Int?      @default(0)
+  failed_validations     Int?      @default(0)
+  status                 String?   @default("ACTIVE") @db.VarChar(50)
+  joined_at              DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime? @default(now()) @db.Timestamptz(6)
+
+  user                   users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  votes                  oracle_votes[]
+}
+
+model oracle_votes {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  request_id      String    @db.Uuid
+  validator_id    String    @db.Uuid
+  proposed_outcome String   @db.VarChar(255)
+  stake_weight    Decimal   @db.Decimal(20,8)
+  is_consensus    Boolean?
+  reward_amount   Decimal?  @default(0) @db.Decimal(20,8)
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+
+  request         oracle_requests   @relation(fields: [request_id], references: [id], onDelete: Cascade)
+  validator       oracle_validators @relation(fields: [validator_id], references: [id], onDelete: Cascade)
+
+  @@unique([request_id, validator_id])
+}

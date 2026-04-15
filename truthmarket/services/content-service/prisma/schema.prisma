@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id               String             @id @db.Uuid
+  contents         content_registry[]
+}
+
+model signal_markets {
+  id               String             @id @db.Uuid
+  content_registry content_registry[]
+}
+
+model content_registry {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id          String    @db.Uuid
+  content_type     String    @db.VarChar(50)
+  
+  title            String?   @db.VarChar(500)
+  body             String?
+  media_url        String?
+  thumbnail_url    String?
+  external_url     String?
+  
+  metadata         Json?
+  ipfs_hash        String?   @db.VarChar(100)
+  nft_token_id     String?   @db.VarChar(100)
+  
+  signal_market_id String?   @db.Uuid
+  
+  view_count       Int?      @default(0)
+  signal_count     Int?      @default(0)
+  bookmark_count   Int?      @default(0)
+  comment_count    Int?      @default(0)
+  share_count      Int?      @default(0)
+  
+  signal_strength  Decimal?  @default(0) @db.Decimal(5,2)
+  
+  is_nft           Boolean?  @default(false)
+  is_deleted       Boolean?  @default(false)
+  
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime? @default(now()) @db.Timestamptz(6)
+
+  user             users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  signal_market    signal_markets? @relation(fields: [signal_market_id], references: [id], onDelete: SetNull)
+  
+  video_content    video_content[]
+  article_content  article_content[]
+  audio_content    audio_content[]
+  photo_content    photo_content[]
+  analysis_content analysis_content[]
+  news_content     news_content[]
+  product_content  product_content[]
+  person_content   person_content[]
+}
+
+model video_content {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id       String    @db.Uuid
+  video_url        String
+  thumbnail_url    String?
+  duration_seconds Int?
+  resolution       String?   @db.VarChar(20)
+  file_size        BigInt?
+  codec            String?   @db.VarChar(50)
+  bitrate          Int?
+  view_count       Int?      @default(0)
+  watch_time_total BigInt?   @default(0)
+  completion_rate  Decimal?  @default(0.00) @db.Decimal(5,2)
+  rewatch_rate     Decimal?  @default(0.00) @db.Decimal(5,2)
+  viral_coefficient Decimal? @default(0.00) @db.Decimal(5,2)
+  platform_syncs   Json?
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+
+  content          content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model article_content {
+  id                   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id           String    @db.Uuid
+  body_markdown        String?
+  body_html            String?
+  reading_time_minutes Int?
+  word_count           Int?
+  source_urls          String[]
+  created_at           DateTime? @default(now()) @db.Timestamptz(6)
+
+  content              content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model audio_content {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id       String    @db.Uuid
+  audio_url        String
+  duration_seconds Int?
+  resonance_score  Decimal?  @default(0.00) @db.Decimal(5,2)
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+
+  content          content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model photo_content {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id          String    @db.Uuid
+  image_url           String
+  visual_impact_score Decimal?  @default(0.00) @db.Decimal(5,2)
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  content             content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model analysis_content {
+  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id         String    @db.Uuid
+  accuracy_rate      Decimal?  @default(0.00) @db.Decimal(5,2)
+  market_performance Decimal?  @default(0.00) @db.Decimal(5,2)
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+
+  content            content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model news_content {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id          String    @db.Uuid
+  source_verification Boolean?  @default(false)
+  reliability_chain   String[]
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  content             content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model product_content {
+  id                       String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id               String    @db.Uuid
+  product_market_fit_score Decimal?  @default(0.00) @db.Decimal(5,2)
+  created_at               DateTime? @default(now()) @db.Timestamptz(6)
+
+  content                  content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}
+
+model person_content {
+  id                   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id           String    @db.Uuid
+  influence_trajectory Decimal?  @default(0.00) @db.Decimal(5,2)
+  created_at           DateTime? @default(now()) @db.Timestamptz(6)
+
+  content              content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+}

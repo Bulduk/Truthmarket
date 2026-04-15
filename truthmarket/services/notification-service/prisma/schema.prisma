@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id            String          @id @db.Uuid
+  notifications notifications[]
+  push_tokens   push_tokens[]
+  email_logs    email_logs[]
+}
+
+model notifications {
+  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id           String    @db.Uuid
+  notification_type String    @db.VarChar(50)
+  title             String    @db.VarChar(255)
+  message           String
+  reference_id      String?   @db.Uuid
+  reference_type    String?   @db.VarChar(50)
+  action_url        String?
+  icon_url          String?
+  is_read           Boolean?  @default(false)
+  read_at           DateTime? @db.Timestamptz(6)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  user              users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model push_tokens {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id    String    @db.Uuid
+  device_id  String    @db.VarChar(255)
+  token      String    @db.VarChar(512)
+  platform   String    @db.VarChar(50)
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+
+  user       users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, device_id])
+}
+
+model email_logs {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id             String?   @db.Uuid
+  recipient_email     String    @db.VarChar(255)
+  template_name       String    @db.VarChar(100)
+  subject             String    @db.VarChar(255)
+  status              String?   @default("PENDING") @db.VarChar(50)
+  provider_message_id String?   @db.VarChar(255)
+  error_message       String?
+  sent_at             DateTime? @db.Timestamptz(6)
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  user                users?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+}

@@ -1,0 +1,43 @@
+[data-theme="binance"] {
+  --bg-void: #181A20;
+  --bg-base: #181A20;
+  --bg-surface: #1E2026;
+  --bg-card: #1E2026;
+  --bg-overlay: #2B2F36;
+  --bg-border: #2B2F36;
+  --bg-borderLight: #363C45;
+  --bg-hover: #2B2F36;
+  --bg-active: #363C45;
+  --bg-input: #2B2F36;
+
+  --text-primary: #EAECEF;
+  --text-secondary: #B7BDC6;
+  --text-muted: #848E9C;
+  --text-disabled: #474D57;
+  --text-inverse: #181A20;
+  --text-gold: #F0B90B;
+
+  --gold: #F0B90B;
+  --gold-light: #FFD93D;
+  --gold-dark: #D4A009;
+  --gold-glow: rgba(240,185,11,0.15);
+  --gold-glow2: rgba(240,185,11,0.25);
+
+  --yes: #0ECB81;
+  --yes-light: #2EE89A;
+  --yes-dark: #0BA368;
+  --yes-glow: rgba(14,203,129,0.20);
+  --yes-bg: rgba(14,203,129,0.08);
+  --yes-border: rgba(14,203,129,0.25);
+
+  --no: #F6465D;
+  --no-light: #FF6B7A;
+  --no-dark: #C73850;
+  --no-glow: rgba(246,70,93,0.20);
+  --no-bg: rgba(246,70,93,0.08);
+  --no-border: rgba(246,70,93,0.25);
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.40);
+  --shadow-modal: 0 8px 48px rgba(0,0,0,0.60);
+  --shadow-gold: 0 0 20px rgba(240,185,11,0.25);
+}

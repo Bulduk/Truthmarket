@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id             String           @id @db.Uuid
+  user_analytics user_analytics[]
+}
+
+model signal_markets {
+  id               String             @id @db.Uuid
+  market_analytics market_analytics[]
+}
+
+model user_analytics {
+  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id            String    @unique @db.Uuid
+  total_trades       Int?      @default(0)
+  win_rate           Decimal?  @default(0) @db.Decimal(5,2)
+  total_volume       Decimal?  @default(0) @db.Decimal(20,8)
+  total_profit_loss  Decimal?  @default(0) @db.Decimal(20,8)
+  reputation_score   Decimal?  @default(0) @db.Decimal(10,2)
+  content_created    Int?      @default(0)
+  content_engagement Int?      @default(0)
+  last_active_at     DateTime? @db.Timestamptz(6)
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
+
+  user               users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model market_analytics {
+  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id          String    @unique @db.Uuid
+  total_volume       Decimal?  @default(0) @db.Decimal(20,8)
+  unique_traders     Int?      @default(0)
+  total_trades       Int?      @default(0)
+  liquidity_depth    Decimal?  @default(0) @db.Decimal(20,8)
+  volatility_index   Decimal?  @default(0) @db.Decimal(5,2)
+  signal_strength    Decimal?  @default(0) @db.Decimal(5,2)
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
+
+  market             signal_markets @relation(fields: [market_id], references: [id], onDelete: Cascade)
+}
+
+model platform_metrics {
+  id                     String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  metric_date            DateTime  @unique @db.Date
+  daily_active_users     Int?      @default(0)
+  monthly_active_users   Int?      @default(0)
+  total_volume_24h       Decimal?  @default(0) @db.Decimal(20,8)
+  total_trades_24h       Int?      @default(0)
+  new_markets_24h        Int?      @default(0)
+  resolved_markets_24h   Int?      @default(0)
+  total_value_locked     Decimal?  @default(0) @db.Decimal(20,8)
+  platform_revenue_24h   Decimal?  @default(0) @db.Decimal(20,8)
+  created_at             DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime? @default(now()) @db.Timestamptz(6)
+}

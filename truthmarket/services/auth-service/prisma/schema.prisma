@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Auth Service için gerekli tablolar (Read-only veya Auth spesifik)
+// Veritabanı şeması raw SQL ile oluşturulduğu için Prisma'yı sadece ORM olarak kullanıyoruz.
+
+model users {
+  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  username           String    @unique @db.VarChar(50)
+  email              String?   @unique @db.VarChar(255)
+  wallet_address     String?   @unique @db.VarChar(42)
+  password_hash      String?   @db.VarChar(255)
+  
+  user_type          String?   @default("USER")
+  
+  is_verified        Boolean?  @default(false)
+  is_active          Boolean?  @default(true)
+  is_banned          Boolean?  @default(false)
+  
+  two_fa_enabled     Boolean?  @default(false)
+  two_fa_secret      String?   @db.VarChar(255)
+  
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
+  
+  sessions           user_sessions[]
+  oauth_providers    user_oauth[]
+}
+
+model user_sessions {
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id       String    @db.Uuid
+  refresh_token String    @db.VarChar(512)
+  access_token  String?   @db.VarChar(512)
+  device_type   String?   @db.VarChar(50)
+  ip_address    String?   @db.VarChar(45)
+  is_active     Boolean?  @default(true)
+  expires_at    DateTime  @db.Timestamptz(6)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  
+  user          users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model user_oauth {
+  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id        String    @db.Uuid
+  provider       String    @db.VarChar(50)
+  provider_id    String    @db.VarChar(255)
+  provider_token String?
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+
+  user           users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_id])
+}

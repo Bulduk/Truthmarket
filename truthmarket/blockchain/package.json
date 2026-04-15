@@ -1,0 +1,35 @@
+{
+  "name": "@truthmarket/blockchain",
+  "version": "1.0.0",
+  "description": "FluxMarket Smart Contracts",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:mumbai": "hardhat run scripts/deploy.ts --network polygonMumbai",
+    "deploy:polygon": "hardhat run scripts/deploy.ts --network polygon",
+    "lint": "solhint 'contracts/**/*.sol'",
+    "format": "prettier --write 'contracts/**/*.sol'"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.20.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.11.19",
+    "@types/mocha": "^10.0.6",
+    "@types/chai": "^4.3.11",
+    "chai": "^4.4.1",
+    "ethers": "^6.11.1",
+    "solhint": "^4.1.1",
+    "prettier": "^3.2.5",
+    "prettier-plugin-solidity": "^1.3.1",
+    "dotenv": "^16.4.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1",
+    "@chainlink/contracts": "^1.0.0"
+  }
+}

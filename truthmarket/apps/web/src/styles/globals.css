@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './themes/light.css';
+@import './themes/dark.css';
+@import './themes/binance.css';
+@import './transitions.css';
+
+html, body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+}

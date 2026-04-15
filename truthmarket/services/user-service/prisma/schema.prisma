@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Service için gerekli tablolar
+// Veritabanı şeması raw SQL ile oluşturulduğu için Prisma'yı sadece ORM olarak kullanıyoruz.
+
+model users {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  username            String    @unique @db.VarChar(50)
+  email               String?   @unique @db.VarChar(255)
+  wallet_address      String?   @unique @db.VarChar(42)
+  display_name        String?   @db.VarChar(100)
+  bio                 String?
+  avatar_url          String?
+  cover_url           String?
+  
+  user_type           String?   @default("USER")
+  kyc_status          String?   @default("NONE")
+  
+  is_verified         Boolean?  @default(false)
+  is_active           Boolean?  @default(true)
+  is_banned           Boolean?  @default(false)
+  
+  language            String?   @default("en") @db.VarChar(10)
+  timezone            String?   @default("UTC") @db.VarChar(50)
+  
+  reputation_score    Decimal?  @default(0.00) @db.Decimal(10,2)
+  accuracy_rate       Decimal?  @default(0.00) @db.Decimal(5,2)
+  
+  follower_count      Int?      @default(0)
+  following_count     Int?      @default(0)
+  post_count          Int?      @default(0)
+  market_count        Int?      @default(0)
+  
+  referral_code       String?   @unique @db.VarChar(20)
+  referred_by         String?   @db.Uuid
+  
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamptz(6)
+  
+  settings            user_settings?
+  kyc_records         user_kyc[]
+  reputation_history  user_reputation_history[]
+  
+  followers           user_follows[] @relation("FollowingRelation")
+  following           user_follows[] @relation("FollowerRelation")
+  
+  blocked_users       user_blocks[]  @relation("BlockerRelation")
+  blocked_by          user_blocks[]  @relation("BlockedRelation")
+}
+
+model user_settings {
+  user_id                 String    @id @db.Uuid
+  email_notifications     Boolean?  @default(true)
+  push_notifications      Boolean?  @default(true)
+  privacy_profile         Boolean?  @default(false)
+  theme                   String?   @default("dark") @db.VarChar(20)
+  default_stake_amount    Decimal?  @default(10.00000000) @db.Decimal(20,8)
+  updated_at              DateTime? @default(now()) @db.Timestamptz(6)
+
+  user                    users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model user_kyc {
+  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id           String    @db.Uuid
+  status            String?   @default("PENDING")
+  first_name        String?   @db.VarChar(100)
+  last_name         String?   @db.VarChar(100)
+  nationality       String?   @db.VarChar(2)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  user              users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model user_reputation_history {
+  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id           String    @db.Uuid
+  event_type        String    @db.VarChar(100)
+  score_change      Decimal   @db.Decimal(10,2)
+  score_after       Decimal   @db.Decimal(10,2)
+  reason            String?
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  user              users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model user_follows {
+  follower_id       String    @db.Uuid
+  following_id      String    @db.Uuid
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  follower          users     @relation("FollowerRelation", fields: [follower_id], references: [id], onDelete: Cascade)
+  following         users     @relation("FollowingRelation", fields: [following_id], references: [id], onDelete: Cascade)
+
+  @@id([follower_id, following_id])
+}
+
+model user_blocks {
+  blocker_id        String    @db.Uuid
+  blocked_id        String    @db.Uuid
+  reason            String?
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  blocker           users     @relation("BlockerRelation", fields: [blocker_id], references: [id], onDelete: Cascade)
+  blocked           users     @relation("BlockedRelation", fields: [blocked_id], references: [id], onDelete: Cascade)
+
+  @@id([blocker_id, blocked_id])
+}

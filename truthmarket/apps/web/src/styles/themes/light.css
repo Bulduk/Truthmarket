@@ -1,0 +1,43 @@
+:root, [data-theme="light"] {
+  --bg-void: #FFFFFF;
+  --bg-base: #FAFAFA;
+  --bg-surface: #F5F5F5;
+  --bg-card: #FFFFFF;
+  --bg-overlay: #F0F0F0;
+  --bg-border: #E8E8E8;
+  --bg-borderLight: #F5F5F5;
+  --bg-hover: #F5F5F5;
+  --bg-active: #EBEBEB;
+  --bg-input: #FFFFFF;
+
+  --text-primary: #1E2026;
+  --text-secondary: #474D57;
+  --text-muted: #848E9C;
+  --text-disabled: #B7BDC6;
+  --text-inverse: #FFFFFF;
+  --text-gold: #B8860B;
+
+  --gold: #F0B90B;
+  --gold-light: #FFD93D;
+  --gold-dark: #B8860B;
+  --gold-glow: rgba(240,185,11,0.10);
+  --gold-glow2: rgba(240,185,11,0.20);
+
+  --yes: #03A66D;
+  --yes-light: #00D68F;
+  --yes-dark: #027A52;
+  --yes-glow: rgba(3,166,109,0.15);
+  --yes-bg: rgba(3,166,109,0.06);
+  --yes-border: rgba(3,166,109,0.20);
+
+  --no: #CF304A;
+  --no-light: #F6465D;
+  --no-dark: #A3243B;
+  --no-glow: rgba(207,48,74,0.15);
+  --no-bg: rgba(207,48,74,0.06);
+  --no-border: rgba(207,48,74,0.20);
+
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-modal: 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-gold: 0 0 20px rgba(240,185,11,0.20);
+}

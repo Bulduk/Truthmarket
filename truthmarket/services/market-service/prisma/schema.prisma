@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Minimal users model
+model users {
+  id                 String    @id @db.Uuid
+  markets_created    markets[]
+  market_positions   market_positions[]
+  market_orders      market_orders[]
+  trades_as_maker    market_trades[] @relation("MakerTrades")
+  trades_as_taker    market_trades[] @relation("TakerTrades")
+  liquidity_provided market_liquidity_providers[]
+  settlements        market_settlements[]
+  disputes           market_disputes[]
+  signal_positions   signal_positions[]
+}
+
+// Minimal content_registry model
+model content_registry {
+  id                 String    @id @db.Uuid
+  signal_markets     signal_markets[]
+}
+
+model markets {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  creator_id          String    @db.Uuid
+  title               String    @db.VarChar(500)
+  description         String?
+  category            String
+  status              String?   @default("ACTIVE")
+  
+  yes_price           Decimal?  @default(0.5000) @db.Decimal(10,4)
+  no_price            Decimal?  @default(0.5000) @db.Decimal(10,4)
+  
+  total_volume        Decimal?  @default(0) @db.Decimal(20,8)
+  liquidity           Decimal?  @default(0) @db.Decimal(20,8)
+  participant_count   Int?      @default(0)
+  
+  oracle_type         String?   @default("COMMUNITY")
+  oracle_address      String?   @db.VarChar(42)
+  
+  resolution_source   String?
+  resolved_at         DateTime? @db.Timestamptz(6)
+  winning_outcome     String?   @db.VarChar(50)
+  
+  start_time          DateTime? @default(now()) @db.Timestamptz(6)
+  end_time            DateTime  @db.Timestamptz(6)
+  
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamptz(6)
+  deleted_at          DateTime? @db.Timestamptz(6)
+
+  creator             users     @relation(fields: [creator_id], references: [id], onDelete: Cascade)
+  positions           market_positions[]
+  orders              market_orders[]
+  trades              market_trades[]
+  liquidity_providers market_liquidity_providers[]
+  settlements         market_settlements[]
+  disputes            market_disputes[]
+  tags                market_tags[]
+}
+
+model market_positions {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id       String    @db.Uuid
+  user_id         String    @db.Uuid
+  outcome         String    @db.VarChar(50)
+  shares          Decimal   @default(0) @db.Decimal(20,8)
+  avg_price       Decimal   @db.Decimal(10,4)
+  realized_pnl    Decimal?  @default(0) @db.Decimal(20,8)
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+
+  market          markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  user            users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([market_id, user_id, outcome])
+}
+
+model market_orders {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id       String    @db.Uuid
+  user_id         String    @db.Uuid
+  order_type      String
+  outcome         String    @db.VarChar(50)
+  price           Decimal   @db.Decimal(10,4)
+  amount          Decimal   @db.Decimal(20,8)
+  filled_amount   Decimal?  @default(0) @db.Decimal(20,8)
+  status          String?   @default("OPEN")
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+
+  market          markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  user            users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  maker_trades    market_trades[] @relation("MakerOrder")
+  taker_trades    market_trades[] @relation("TakerOrder")
+}
+
+model market_trades {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id       String    @db.Uuid
+  maker_order_id  String?   @db.Uuid
+  taker_order_id  String?   @db.Uuid
+  maker_id        String    @db.Uuid
+  taker_id        String    @db.Uuid
+  outcome         String    @db.VarChar(50)
+  price           Decimal   @db.Decimal(10,4)
+  amount          Decimal   @db.Decimal(20,8)
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+
+  market          markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  maker_order     market_orders? @relation("MakerOrder", fields: [maker_order_id], references: [id])
+  taker_order     market_orders? @relation("TakerOrder", fields: [taker_order_id], references: [id])
+  maker           users     @relation("MakerTrades", fields: [maker_id], references: [id])
+  taker           users     @relation("TakerTrades", fields: [taker_id], references: [id])
+}
+
+model market_liquidity_providers {
+  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id         String    @db.Uuid
+  user_id           String    @db.Uuid
+  liquidity_amount  Decimal   @db.Decimal(20,8)
+  pool_shares       Decimal   @db.Decimal(20,8)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  market            markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  user              users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model market_settlements {
+  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id         String    @db.Uuid
+  resolved_by       String?   @db.Uuid
+  winning_outcome   String    @db.VarChar(50)
+  proof_url         String?
+  settlement_data   Json?
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  market            markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  resolver          users?    @relation(fields: [resolved_by], references: [id])
+}
+
+model market_disputes {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id           String    @db.Uuid
+  disputer_id         String    @db.Uuid
+  reason              String
+  evidence_url        String?
+  status              String?   @default("OPEN")
+  resolution_outcome  String?   @db.VarChar(50)
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  market              markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+  disputer            users     @relation(fields: [disputer_id], references: [id])
+}
+
+model market_tags {
+  market_id         String    @db.Uuid
+  tag               String    @db.VarChar(50)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  market            markets   @relation(fields: [market_id], references: [id], onDelete: Cascade)
+
+  @@id([market_id, tag])
+}
+
+model signal_markets {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content_id          String    @db.Uuid
+  content_type        String    @db.VarChar(50)
+  market_type         String    @db.VarChar(50)
+  signal_strength     Decimal?  @default(0) @db.Decimal(5,2)
+  
+  amplify_volume      Decimal?  @default(0) @db.Decimal(20,8)
+  dampen_volume       Decimal?  @default(0) @db.Decimal(20,8)
+  spike_volume        Decimal?  @default(0) @db.Decimal(20,8)
+  fade_volume         Decimal?  @default(0) @db.Decimal(20,8)
+  
+  amplify_odds        Decimal?  @default(2.0) @db.Decimal(10,4)
+  dampen_odds         Decimal?  @default(2.0) @db.Decimal(10,4)
+  spike_odds          Decimal?  @default(10.0) @db.Decimal(10,4)
+  fade_odds           Decimal?  @default(5.0) @db.Decimal(10,4)
+  
+  total_volume        Decimal?  @default(0) @db.Decimal(20,8)
+  participant_count   Int?      @default(0)
+  status              String?   @default("active") @db.VarChar(50)
+  
+  resolution_metric   Json?
+  oracle_source       String?   @db.VarChar(100)
+  
+  start_time          DateTime  @db.Timestamptz(6)
+  end_time            DateTime  @db.Timestamptz(6)
+  resolved_at         DateTime? @db.Timestamptz(6)
+  resolution_data     Json?
+  winning_position    String?   @db.VarChar(50)
+  
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  content             content_registry @relation(fields: [content_id], references: [id], onDelete: Cascade)
+  positions           signal_positions[]
+  map_positions       signal_map_positions[]
+}
+
+model signal_positions {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  signal_market_id    String    @db.Uuid
+  user_id             String    @db.Uuid
+  position_type       String    @db.VarChar(50)
+  amount              Decimal   @db.Decimal(20,8)
+  odds_at_entry       Decimal   @db.Decimal(10,4)
+  potential_return    Decimal?  @db.Decimal(20,8)
+  status              String?   @default("open") @db.VarChar(50)
+  opened_at           DateTime? @default(now()) @db.Timestamptz(6)
+  closed_at           DateTime? @db.Timestamptz(6)
+  settled_at          DateTime? @db.Timestamptz(6)
+  profit_loss         Decimal?  @db.Decimal(20,8)
+  tx_hash             String?   @db.VarChar(100)
+
+  signal_market       signal_markets @relation(fields: [signal_market_id], references: [id], onDelete: Cascade)
+  user                users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model signal_map_positions {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  market_id           String    @db.Uuid
+  hex_q               Int
+  hex_r               Int
+  hex_s               Int
+  hex_size            Decimal?  @default(1.0) @db.Decimal(10,4)
+  dominant_color      String?   @db.VarChar(20)
+  signal_strength     Decimal?  @db.Decimal(5,2)
+  is_active           Boolean?  @default(true)
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  signal_market       signal_markets @relation(fields: [market_id], references: [id], onDelete: Cascade)
+
+  @@unique([hex_q, hex_r, hex_s])
+}
