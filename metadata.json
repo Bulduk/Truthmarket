@@ -1,6 +1,4 @@
 {
-  "name": "",
-  "description": "",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
+  "name": "PulseMarket",
+  "description": "Social prediction system with deep black glassmorphism theme and Supabase."
 }

@@ -150,11 +150,11 @@ export default function MarketsPage() {
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
             Markets
-            <span className="px-2.5 py-1 rounded-md bg-[#fcd535]/10 text-[#fcd535] text-sm font-bold font-mono">
+            <span className="px-2.5 py-1 rounded-md bg-[rgba(138,43,226,0.15)] text-[#c084fc] text-sm font-bold font-mono border border-[rgba(138,43,226,0.2)]">
               {filteredMarkets.length}
             </span>
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Trade on the world's most accurate prediction markets.</p>
+          <p className="text-gray-400 text-sm mt-1">Trade on the world&apos;s most accurate prediction markets.</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -196,7 +196,7 @@ export default function MarketsPage() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors ${
                 activeCategory === cat 
-                  ? 'bg-[#fcd535] text-[#1e2329]' 
+                  ? 'bg-gradient-to-r from-[#8a2be2] to-[#1e3a8a] text-white shadow-[0_0_15px_rgba(138,43,226,0.3)]' 
                   : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -220,7 +220,7 @@ export default function MarketsPage() {
                     key={sort}
                     onClick={() => setActiveSort(sort)}
                     className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      activeSort === sort ? 'bg-[#fcd535]/10 text-[#fcd535]' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                      activeSort === sort ? 'bg-[rgba(138,43,226,0.15)] text-[#c084fc]' : 'text-gray-400 hover:bg-[rgba(255,255,255,0.05)] hover:text-white'
                     }`}
                   >
                     {sort}
@@ -239,23 +239,23 @@ export default function MarketsPage() {
       <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "flex flex-col gap-3"}>
         {filteredMarkets.map((market) => {
           const isYesLeading = market.yesPrice > 0.5;
-          const chartColor = isYesLeading ? '#0ecb81' : '#f6465d';
+          const chartColor = isYesLeading ? '#00e5ff' : '#ff007f';
 
           if (viewMode === 'list') {
             return (
-              <Link key={market.id} href={`/markets/${market.id}`} className="glass rounded-xl p-4 border border-white/5 hover:border-white/20 transition-colors group flex flex-col md:flex-row md:items-center gap-4">
+              <Link key={market.id} href={`/markets/${market.id}`} className="glass rounded-xl p-4 border border-[rgba(255,255,255,0.05)] hover:border-[rgba(138,43,226,0.3)] transition-colors group flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-gray-400 uppercase tracking-wider">
                       {market.category}
                     </span>
                     {market.isHot && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#fcd535]/10 text-[#fcd535] flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[rgba(138,43,226,0.15)] text-[#c084fc] border border-[rgba(138,43,226,0.2)] flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" /> HOT
                       </span>
                     )}
                   </div>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#fcd535] transition-colors line-clamp-1">
+                  <h3 className="text-base font-bold text-white group-hover:text-[#c084fc] transition-colors line-clamp-1">
                     {market.title}
                   </h3>
                 </div>
@@ -270,13 +270,13 @@ export default function MarketsPage() {
                   </div>
 
                   <div className="flex gap-2 w-48">
-                    <div className="flex-1 bg-[#0ecb81]/10 border border-[#0ecb81]/20 rounded-lg py-2 px-3 flex justify-between items-center group-hover:bg-[#0ecb81]/20 transition-colors">
-                      <span className="text-xs font-bold text-[#0ecb81]">YES</span>
-                      <span className="text-sm font-bold text-[#0ecb81] font-mono">{(market.yesPrice * 100).toFixed(1)}¢</span>
+                    <div className="flex-1 bg-[rgba(0,229,255,0.1)] border border-[rgba(0,229,255,0.2)] rounded-lg py-2 px-3 flex justify-between items-center group-hover:bg-[rgba(0,229,255,0.2)] transition-colors">
+                      <span className="text-xs font-bold text-[#00e5ff]">YES</span>
+                      <span className="text-sm font-bold text-[#00e5ff] font-mono">{(market.yesPrice * 100).toFixed(1)}¢</span>
                     </div>
-                    <div className="flex-1 bg-[#f6465d]/10 border border-[#f6465d]/20 rounded-lg py-2 px-3 flex justify-between items-center group-hover:bg-[#f6465d]/20 transition-colors">
-                      <span className="text-xs font-bold text-[#f6465d]">NO</span>
-                      <span className="text-sm font-bold text-[#f6465d] font-mono">{((1 - market.yesPrice) * 100).toFixed(1)}¢</span>
+                    <div className="flex-1 bg-[rgba(255,0,127,0.1)] border border-[rgba(255,0,127,0.2)] rounded-lg py-2 px-3 flex justify-between items-center group-hover:bg-[rgba(255,0,127,0.2)] transition-colors">
+                      <span className="text-xs font-bold text-[#ff007f]">NO</span>
+                      <span className="text-sm font-bold text-[#ff007f] font-mono">{((1 - market.yesPrice) * 100).toFixed(1)}¢</span>
                     </div>
                   </div>
                 </div>
@@ -286,9 +286,9 @@ export default function MarketsPage() {
 
           // Grid View
           return (
-            <Link key={market.id} href={`/markets/${market.id}`} className="glass rounded-2xl p-5 border border-white/5 hover:border-white/20 transition-colors group flex flex-col h-full relative overflow-hidden">
+            <Link key={market.id} href={`/markets/${market.id}`} className="glass rounded-2xl p-5 border border-[rgba(255,255,255,0.05)] hover:border-[rgba(138,43,226,0.3)] transition-colors group flex flex-col h-full relative overflow-hidden">
               {/* Subtle background glow based on leading side */}
-              <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl opacity-10 transition-colors ${isYesLeading ? 'bg-[#0ecb81]' : 'bg-[#f6465d]'}`} />
+              <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl opacity-10 transition-colors ${isYesLeading ? 'bg-[#00e5ff]' : 'bg-[#ff007f]'}`} />
               
               <div className="flex justify-between items-start mb-3 relative z-10">
                 <div className="flex items-center gap-2">
@@ -296,7 +296,7 @@ export default function MarketsPage() {
                     {market.category}
                   </span>
                   {market.isHot && (
-                    <span className="p-1 rounded-md bg-[#fcd535]/10 text-[#fcd535]">
+                    <span className="p-1 rounded-md bg-[rgba(138,43,226,0.15)] text-[#c084fc] border border-[rgba(138,43,226,0.2)]">
                       <TrendingUp className="w-4 h-4" />
                     </span>
                   )}
@@ -307,7 +307,7 @@ export default function MarketsPage() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-white group-hover:text-[#fcd535] transition-colors mb-4 line-clamp-2 relative z-10">
+              <h3 className="text-lg font-bold text-white group-hover:text-[#c084fc] transition-colors mb-4 line-clamp-2 relative z-10">
                 {market.title}
               </h3>
 
@@ -317,13 +317,13 @@ export default function MarketsPage() {
 
               <div className="mt-auto space-y-4 relative z-10">
                 <div className="flex gap-2">
-                  <div className="flex-1 bg-[#0ecb81]/10 border border-[#0ecb81]/20 rounded-xl p-3 flex flex-col items-center group-hover:bg-[#0ecb81]/20 transition-colors">
-                    <span className="text-xs font-bold text-[#0ecb81] mb-1">YES</span>
-                    <span className="text-xl font-bold text-[#0ecb81] font-mono">{(market.yesPrice * 100).toFixed(1)}¢</span>
+                  <div className="flex-1 bg-[rgba(0,229,255,0.1)] border border-[rgba(0,229,255,0.2)] rounded-xl p-3 flex flex-col items-center group-hover:bg-[rgba(0,229,255,0.2)] transition-colors shadow-[0_4px_20px_rgba(0,229,255,0.05)]">
+                    <span className="text-xs font-bold text-[#00e5ff] mb-1">YES</span>
+                    <span className="text-xl font-bold text-[#00e5ff] font-mono">{(market.yesPrice * 100).toFixed(1)}¢</span>
                   </div>
-                  <div className="flex-1 bg-[#f6465d]/10 border border-[#f6465d]/20 rounded-xl p-3 flex flex-col items-center group-hover:bg-[#f6465d]/20 transition-colors">
-                    <span className="text-xs font-bold text-[#f6465d] mb-1">NO</span>
-                    <span className="text-xl font-bold text-[#f6465d] font-mono">{((1 - market.yesPrice) * 100).toFixed(1)}¢</span>
+                  <div className="flex-1 bg-[rgba(255,0,127,0.1)] border border-[rgba(255,0,127,0.2)] rounded-xl p-3 flex flex-col items-center group-hover:bg-[rgba(255,0,127,0.2)] transition-colors shadow-[0_4px_20px_rgba(255,0,127,0.05)]">
+                    <span className="text-xs font-bold text-[#ff007f] mb-1">NO</span>
+                    <span className="text-xl font-bold text-[#ff007f] font-mono">{((1 - market.yesPrice) * 100).toFixed(1)}¢</span>
                   </div>
                 </div>
 

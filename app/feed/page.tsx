@@ -18,6 +18,7 @@ const MOCK_POSTS = [
     likes: 14500,
     comments: 842,
     reposts: 3200,
+    pulseMarketType: 'truth' as const,
     market: {
       id: 'm1',
       title: 'Will L2 average transaction fees drop below $0.01 after Dencun?',
@@ -40,6 +41,7 @@ const MOCK_POSTS = [
     likes: 3200,
     comments: 156,
     reposts: 480,
+    pulseMarketType: 'reach' as const,
     isNFT: true,
   },
   {

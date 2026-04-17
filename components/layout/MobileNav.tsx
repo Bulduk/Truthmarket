@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, BarChart2, PlusCircle, Wallet, User } from 'lucide-react';
 import { clsx } from 'clsx';
+import { CreateButton } from '@/components/create/CreateButton';
 
 export function MobileNav() {
   const pathname = usePathname();
@@ -18,10 +19,18 @@ export function MobileNav() {
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/10 pb-safe">
-      <div className="flex items-center justify-around h-16 px-2">
+      <div className="flex items-center justify-around h-16 px-2 relative">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
           
+          if (item.name === 'Oluştur') {
+            return (
+              <div key="create" className="relative -top-4">
+                <CreateButton />
+              </div>
+            );
+          }
+
           return (
             <Link
               key={item.name}

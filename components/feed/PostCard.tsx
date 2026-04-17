@@ -2,6 +2,8 @@
 
 import { MessageSquare, Repeat2, Heart, Share, Award } from 'lucide-react';
 import { MarketWidget } from './MarketWidget';
+import { FeedTradeButton } from '@/components/trade/triggers/FeedTradeButton';
+import { MarketType } from '@/store/tradeStore';
 
 interface PostCardProps {
   post: {
@@ -25,6 +27,7 @@ interface PostCardProps {
       volume: string;
       participants: number;
     };
+    pulseMarketType?: MarketType; // for the new pulse market system
     isNFT?: boolean;
   };
 }
@@ -72,6 +75,12 @@ export function PostCard({ post }: PostCardProps) {
           {/* Embedded Market */}
           {post.market && (
             <MarketWidget market={post.market} />
+          )}
+
+          {post.pulseMarketType && (
+            <div className="mt-4">
+              <FeedTradeButton marketType={post.pulseMarketType} contentId={post.id} />
+            </div>
           )}
 
           {/* Actions */}
